@@ -4,7 +4,7 @@ YKPagedScrollView
 YKPagedScrollView is UIScrollView subclass has interface like UITableview. This library is based on [NNRotationBanner](https://github.com/naonya3/NNRotationBanner), and inspired [PunchScrollView](https://github.com/tapwork/PunchScrollView)
 
 - Reusable views.
-- East to use interface like UITableView.
+- Easy to use interface like UITableView.
 - Infinite scroll supports.
 - Horizontal/Vertical scroll supports.
 

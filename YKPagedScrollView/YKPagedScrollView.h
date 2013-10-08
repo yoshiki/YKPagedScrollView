@@ -47,4 +47,7 @@ typedef enum {
 - (NSArray *)storedPages;
 - (NSInteger)currentIndex;
 
+- (void)scrollToNextPageAnimated:(BOOL)animated;
+- (void)scrollToPreviousPageAnimated:(BOOL)animated;
+
 @end

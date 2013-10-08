@@ -164,12 +164,12 @@
         CGFloat maxX = CGRectGetWidth(self.bounds) * _numberOfPage * (kYKPagedScrollViewAdvancedLengthFactor - 1);
         CGFloat minX = CGRectGetWidth(self.bounds) * _numberOfPage;
         
-        if (offsetX > maxX) {
+        if (offsetX >= maxX) {
             self.contentOffset = (CGPoint){
                 CGRectGetWidth(self.bounds) * _numberOfPage * ((int)kYKPagedScrollViewAdvancedLengthFactor/2) + abs(offsetX - maxX),
                 0.0f
             };
-        } else if (offsetX < minX) {
+        } else if (offsetX <= minX) {
             self.contentOffset = (CGPoint){
                 CGRectGetWidth(self.bounds) * _numberOfPage * ((int)kYKPagedScrollViewAdvancedLengthFactor/2) + abs(offsetX - minX),
                 0.0f
@@ -180,12 +180,12 @@
         CGFloat maxY = CGRectGetHeight(self.bounds) * _numberOfPage * (kYKPagedScrollViewAdvancedLengthFactor - 1);
         CGFloat minY = CGRectGetHeight(self.bounds) * _numberOfPage;
         
-        if (offsetY > maxY) {
+        if (offsetY >= maxY) {
             self.contentOffset = (CGPoint){
                 0.0f,
                 CGRectGetHeight(self.bounds) * _numberOfPage * ((int)kYKPagedScrollViewAdvancedLengthFactor/2) + abs(offsetY - maxY)
             };
-        } else if (offsetY < minY) {
+        } else if (offsetY <= minY) {
             self.contentOffset = (CGPoint){
                 0.0f,
                 CGRectGetHeight(self.bounds) * _numberOfPage * ((int)kYKPagedScrollViewAdvancedLengthFactor/2) + abs(offsetY - minY)
@@ -289,6 +289,18 @@
 - (NSInteger)currentIndex {
     int index = [self startIndex];
     return [self convertIndexFromInternalIndex:index];
+}
+
+- (void)scrollToNextPageAnimated:(BOOL)animated {
+    if (!_infinite && [self currentIndex] == _numberOfPage - 1) return;
+    NSInteger nextPageIndex = [self startIndex] + 1;
+    [self scrollRectToVisible:[self rectForPageAtIndex:nextPageIndex] animated:animated];
+}
+
+- (void)scrollToPreviousPageAnimated:(BOOL)animated {
+    if (!_infinite && [self currentIndex] == 0) return;
+    NSInteger previousPageIndex = [self startIndex] - 1;
+    [self scrollRectToVisible:[self rectForPageAtIndex:previousPageIndex] animated:animated];
 }
 
 #pragma mark - UIScrollViewDelegate
