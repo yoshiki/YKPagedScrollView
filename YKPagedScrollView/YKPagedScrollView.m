@@ -271,7 +271,7 @@
     self.contentOffset = [self _contentOffset];
 }
 
-- (UIView *)dequeueReusablePageWithIdentifier:(NSString *)identifier {
+- (UIView *)dequeueReusablePage {
     UIView *reusablePage = [_reusablePages anyObject];
     if (reusablePage != nil) {
         [_reusablePages removeObject:reusablePage];

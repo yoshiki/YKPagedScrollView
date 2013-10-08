@@ -65,8 +65,7 @@
 }
 
 - (UIView *)pagedScrollView:(YKPagedScrollView *)pagedScrollView viewForPageAtIndex:(NSInteger)index {
-    static NSString *pageIdentifier = @"Page";
-    UIView *page = [pagedScrollView dequeueReusablePageWithIdentifier:pageIdentifier];
+    UIView *page = [pagedScrollView dequeueReusablePage];
     
     if (page == nil) {
         page = [[UIView alloc] initWithFrame:self.view.bounds];

@@ -43,7 +43,7 @@ typedef enum {
 @property (nonatomic, assign) BOOL infinite;
 
 - (void)reloadData;
-- (UIView *)dequeueReusablePageWithIdentifier:(NSString *)identifier;
+- (UIView *)dequeueReusablePage;
 - (NSArray *)storedPages;
 - (NSInteger)currentIndex;
 
