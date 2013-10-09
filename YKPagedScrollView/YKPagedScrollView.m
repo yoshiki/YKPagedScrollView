@@ -309,7 +309,7 @@
     return [self pageAtIndex:[self startIndex]];
 }
 
-- (void)scrollToPageAtIndex:(NSInteger)index animated:(BOOL)animated {
+- (void)scrollToIndex:(NSInteger)index animated:(BOOL)animated {
     [self performSelector:@selector(pageWillChange) withObject:nil afterDelay:0.0f];
     [self scrollRectToVisible:[self rectForPageAtIndex:index] animated:animated];
     [self performSelector:@selector(pageDidChange) withObject:nil afterDelay:0.1f];

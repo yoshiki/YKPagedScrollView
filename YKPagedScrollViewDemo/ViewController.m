@@ -50,11 +50,11 @@
 
 #pragma mark - YKPagedScrollViewDelegate
 
-- (void)pagedScrollView:(YKPagedScrollView *)pagedScrollView pageWillChangedFrom:(NSInteger)index {
+- (void)pagedScrollView:(YKPagedScrollView *)pagedScrollView pageWillChangeFrom:(NSInteger)index {
     NSLog(@"A page will change from %d", index);
 }
 
-- (void)pagedScrollView:(YKPagedScrollView *)pagedScrollView pageDidChangedTo:(NSInteger)index {
+- (void)pagedScrollView:(YKPagedScrollView *)pagedScrollView pageDidChangeTo:(NSInteger)index {
     NSLog(@"A page changed to %d", index);
 }
 

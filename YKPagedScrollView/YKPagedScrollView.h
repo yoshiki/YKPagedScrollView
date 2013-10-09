@@ -48,7 +48,7 @@ typedef enum {
 - (NSInteger)currentIndex;
 - (UIView *)currentPage;
 
-- (void)scrollToPageAtIndex:(NSInteger)index animated:(BOOL)animated;
+- (void)scrollToIndex:(NSInteger)index animated:(BOOL)animated;
 - (void)scrollToNextPageAnimated:(BOOL)animated;
 - (void)scrollToPreviousPageAnimated:(BOOL)animated;
 
