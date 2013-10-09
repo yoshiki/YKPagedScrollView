@@ -46,7 +46,7 @@
     }
     
     NSArray *indexes = [self indexesForPage];
-
+    
     NSMutableSet *visiblePages = [NSMutableSet set];
     for (NSNumber *i in indexes) {
         NSInteger index = [i integerValue];
@@ -68,7 +68,7 @@
         [reusablePage removeFromSuperview];
     }
     [_reusablePages unionSet:reusablePages];
-
+    
     // set new visible pages.
     _visiblePages = visiblePages;
 }
@@ -253,6 +253,18 @@
     }
 }
 
+- (void)pageDidChange {
+    if ([self.delegate respondsToSelector:@selector(pagedScrollView:pageDidChangeTo:)]) {
+        [self.delegate pagedScrollView:self pageDidChangeTo:[self currentIndex]];
+    }
+}
+
+- (void)pageWillChange {
+    if ([self.delegate respondsToSelector:@selector(pagedScrollView:pageWillChangeFrom:)]) {
+        [self.delegate pagedScrollView:self pageWillChangeFrom:[self currentIndex]];
+    }
+}
+
 #pragma mark - Public methods
 
 - (void)setDelegate:(id<YKPagedScrollViewDelegate>)delegate {
@@ -265,7 +277,7 @@
 - (void)reloadData {
     [_reusablePages removeAllObjects];
     [_visiblePages removeAllObjects];
-
+    
     _numberOfPage = [self.dataSource numberOfPagesInPagedScrollView];
     self.contentSize = [self _contentSize];
     self.contentOffset = [self _contentOffset];
@@ -282,8 +294,10 @@
 }
 
 - (NSArray *)storedPages {
-    return @[ [_visiblePages allObjects],
-              [_reusablePages allObjects] ];
+    NSMutableArray *pages = @[].mutableCopy;
+    [pages addObjectsFromArray:[_visiblePages allObjects]];
+    [pages addObjectsFromArray:[_reusablePages allObjects]];
+    return pages;
 }
 
 - (NSInteger)currentIndex {
@@ -291,30 +305,40 @@
     return [self convertIndexFromInternalIndex:index];
 }
 
+- (UIView *)currentPage {
+    return [self pageAtIndex:[self startIndex]];
+}
+
+- (void)scrollToPageAtIndex:(NSInteger)index animated:(BOOL)animated {
+    [self performSelector:@selector(pageWillChange) withObject:nil afterDelay:0.0f];
+    [self scrollRectToVisible:[self rectForPageAtIndex:index] animated:animated];
+    [self performSelector:@selector(pageDidChange) withObject:nil afterDelay:0.1f];
+}
+
 - (void)scrollToNextPageAnimated:(BOOL)animated {
     if (!_infinite && [self currentIndex] == _numberOfPage - 1) return;
     NSInteger nextPageIndex = [self startIndex] + 1;
+    [self performSelector:@selector(pageWillChange) withObject:nil afterDelay:0.0f];
     [self scrollRectToVisible:[self rectForPageAtIndex:nextPageIndex] animated:animated];
+    [self performSelector:@selector(pageDidChange) withObject:nil afterDelay:0.1f];
 }
 
 - (void)scrollToPreviousPageAnimated:(BOOL)animated {
     if (!_infinite && [self currentIndex] == 0) return;
     NSInteger previousPageIndex = [self startIndex] - 1;
+    [self performSelector:@selector(pageWillChange) withObject:nil afterDelay:0.0f];
     [self scrollRectToVisible:[self rectForPageAtIndex:previousPageIndex] animated:animated];
+    [self performSelector:@selector(pageDidChange) withObject:nil afterDelay:0.1f];
 }
 
 #pragma mark - UIScrollViewDelegate
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
-    if ([self.delegate respondsToSelector:@selector(pagedScrollView:pageDidChangedTo:)]) {
-        [self.delegate pagedScrollView:self pageDidChangedTo:[self currentIndex]];
-    }
+    [self pageDidChange];
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
-    if ([self.delegate respondsToSelector:@selector(pagedScrollView:pageWillChangedFrom:)]) {
-        [self.delegate pagedScrollView:self pageWillChangedFrom:[self currentIndex]];
-    }
+    [self pageWillChange];
 }
 
 @end
