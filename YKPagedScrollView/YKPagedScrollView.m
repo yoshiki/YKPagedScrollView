@@ -273,6 +273,10 @@
 }
 
 - (void)reloadData {
+    for (UIView *page in [_visiblePages allObjects]) {
+        [page removeFromSuperview];
+    }
+    
     [_reusablePages removeAllObjects];
     [_visiblePages removeAllObjects];
     
