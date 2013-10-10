@@ -53,9 +53,7 @@
         UIView *page = [self pageAtIndex:index];
         page.tag = index;
         page.frame = [self rectForPageAtIndex:index];
-        if (![page isDescendantOfView:self]) {
-            [self addSubview:page];
-        }
+        [self addSubview:page];
         [visiblePages addObject:page];
     }
     
@@ -123,6 +121,7 @@
 - (UIView *)pageAtIndex:(NSInteger)index {
     UIView *page = [self visiblePageAtIndex:index];
     if (page != nil) {
+        [page removeFromSuperview];
         return page;
     } else {
         NSInteger externalIndex = [self convertIndexFromInternalIndex:index];
@@ -147,14 +146,13 @@
 }
 
 - (UIView *)visiblePageAtIndex:(NSInteger)index {
-    __block UIView *page = nil;
-    [_visiblePages enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
-        UIView *_page = (UIView *)obj;
+    UIView *page = nil;
+    for (UIView *_page in [_visiblePages objectEnumerator]) {
         if (_page.tag == index) {
             page = _page;
-            *stop = YES;
+            break;
         }
-    }];
+    }
     return page;
 }
 
@@ -306,7 +304,7 @@
 }
 
 - (UIView *)currentPage {
-    return [self pageAtIndex:[self startIndex]];
+    return [self visiblePageAtIndex:[self startIndex]];
 }
 
 - (void)scrollToIndex:(NSInteger)index animated:(BOOL)animated {
