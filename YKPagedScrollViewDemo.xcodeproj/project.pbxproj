@@ -262,11 +262,13 @@
 		D65F89A517FE768300C15D35 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer: Yoshiki Kurihara (GQP7W88TZ9)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "YKPagedScrollViewDemo/YKPagedScrollViewDemo-Prefix.pch";
 				INFOPLIST_FILE = "YKPagedScrollViewDemo/YKPagedScrollViewDemo-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "40B58308-B10B-4D41-8C47-27EAF64FF926";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -274,11 +276,13 @@
 		D65F89A617FE768300C15D35 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer: Yoshiki Kurihara (GQP7W88TZ9)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "YKPagedScrollViewDemo/YKPagedScrollViewDemo-Prefix.pch";
 				INFOPLIST_FILE = "YKPagedScrollViewDemo/YKPagedScrollViewDemo-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "40B58308-B10B-4D41-8C47-27EAF64FF926";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

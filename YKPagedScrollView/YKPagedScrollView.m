@@ -147,7 +147,7 @@
 
 - (UIView *)visiblePageAtIndex:(NSInteger)index {
     UIView *page = nil;
-    for (UIView *_page in [_visiblePages objectEnumerator]) {
+    for (UIView *_page in [_visiblePages allObjects]) {
         if (_page.tag == index) {
             page = _page;
             break;
