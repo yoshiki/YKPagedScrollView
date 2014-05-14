@@ -8,7 +8,7 @@
 
 #import "ViewController.h"
 
-#define kYKPagedScrollViewDemoNumberOfPages 3
+#define kYKPagedScrollViewDemoNumberOfPages 4
 
 @interface ViewController ()
 
@@ -31,9 +31,12 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    _scrollView = [[YKPagedScrollView alloc] initWithFrame:self.view.bounds];
+    CGRect frame = CGRectInset(self.view.bounds, 30, 30);
+    _scrollView = [[YKPagedScrollView alloc] initWithFrame:frame];
     _scrollView.delegate = self;
     _scrollView.dataSource = self;
+    _scrollView.clipsToBounds = NO;
+    _scrollView.pagingEnabled = YES;
     //_scrollView.pagingEnabled = NO;
     //_scrollView.direction = YKPagedScrollViewDirectionVertical;
     _scrollView.infinite = YES;
@@ -63,6 +66,13 @@
 - (NSInteger)numberOfPagesInPagedScrollView {
     return kYKPagedScrollViewDemoNumberOfPages;
 }
+
+- (NSInteger)numberOfPagesForLazyLoading {
+    return 2;
+}
+
+//- (CGRect)rectForPageAtIndex:(NSInteger)index {
+//}
 
 - (UIView *)pagedScrollView:(YKPagedScrollView *)pagedScrollView viewForPageAtIndex:(NSInteger)index {
     UIView *page = [pagedScrollView dequeueReusablePage];

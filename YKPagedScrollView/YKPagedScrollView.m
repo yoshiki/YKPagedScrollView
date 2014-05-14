@@ -94,25 +94,42 @@
     return indexes;
 }
 
+- (int)originalStartIndex {
+    int startIndex = ((_direction == YKPagedScrollViewDirectionHorizontal)
+                      ? (int)(self.contentOffset.x / CGRectGetWidth(self.bounds))
+                      : (int)(self.contentOffset.y / CGRectGetHeight(self.bounds)));
+    return startIndex;
+}
+
 - (int)startIndex {
-    return ((_direction == YKPagedScrollViewDirectionHorizontal)
-            ? (int)(self.contentOffset.x / CGRectGetWidth(self.bounds))
-            : (int)(self.contentOffset.y / CGRectGetHeight(self.bounds)));
+    int originalStartIndex = [self originalStartIndex];
+    int startIndex = 0;
+    if (_infinite) {
+        startIndex = MAX(originalStartIndex - [self numberOfLazyLoading], 0);
+    } else {
+        if (originalStartIndex == 0) {
+            startIndex = originalStartIndex;
+        } else {
+            startIndex = MAX(originalStartIndex - [self numberOfLazyLoading], 0);
+        }
+    }
+    return startIndex;
 }
 
 - (int)endIndex {
-    int startIndex = [self startIndex];
+    int originalStartIndex = [self originalStartIndex];
     int endIndex;
     if (_infinite) {
-        endIndex = startIndex + [self numberOfLazyLoading];
+        endIndex = originalStartIndex + [self numberOfLazyLoading];
     } else {
-        if (startIndex < _numberOfPage - 1) {
-            endIndex = startIndex + [self numberOfLazyLoading];
-            if (endIndex >= _numberOfPage) {
-                endIndex = _numberOfPage - 1;
-            }
+        if (originalStartIndex == 0) {
+            endIndex = originalStartIndex + [self numberOfLazyLoading];
+        } else if (originalStartIndex == [self numberOfPage] - 2) {
+            endIndex = originalStartIndex + [self numberOfLazyLoading] - 1;
+        } else if (originalStartIndex == [self numberOfPage] - 1) {
+            endIndex = originalStartIndex;
         } else {
-            endIndex = _numberOfPage - 1;
+            endIndex = originalStartIndex + [self numberOfLazyLoading];
         }
     }
     return endIndex;
@@ -194,7 +211,7 @@
 
 - (NSInteger)numberOfLazyLoading {
     NSInteger num = 0;
-    if ([self.dataSource respondsToSelector:@selector(numberOfLazyLoading)]) {
+    if ([self.dataSource respondsToSelector:@selector(numberOfPagesForLazyLoading)]) {
         num = [self.dataSource numberOfPagesForLazyLoading];
     } else {
         num = kYKPagedScrollViewNumberOfLazyLoading;
