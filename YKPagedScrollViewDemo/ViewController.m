@@ -31,8 +31,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    CGRect frame = CGRectInset(self.view.bounds, 30, 30);
-    _scrollView = [[YKPagedScrollView alloc] initWithFrame:frame];
+    _scrollView = [[YKPagedScrollView alloc] initWithFrame:self.view.bounds];
     _scrollView.delegate = self;
     _scrollView.dataSource = self;
     _scrollView.clipsToBounds = NO;
@@ -70,9 +69,6 @@
 - (NSInteger)numberOfPagesForLazyLoading {
     return 2;
 }
-
-//- (CGRect)rectForPageAtIndex:(NSInteger)index {
-//}
 
 - (UIView *)pagedScrollView:(YKPagedScrollView *)pagedScrollView viewForPageAtIndex:(NSInteger)index {
     UIView *page = [pagedScrollView dequeueReusablePage];
