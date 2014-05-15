@@ -34,8 +34,10 @@ Usage
 ### dataSource methods
 
 ```
+// Should set numberOfPagesForLazyLoading larger than '2'
+// if scrollview bounds is smaller than frame.
 - (NSInteger)numberOfPagesInPagedScrollView {
-    return 4;
+    return 4; // Default value is 1
 }
 
 - (UIView *)pagedScrollView:(YKPagedScrollView *)pagedScrollView viewForPageAtIndex:(NSInteger)index {
@@ -48,6 +50,12 @@ Usage
     // some procee for `page` object.
     
     return page;
+}
+
+// Set size of a page that is smaller than a view frame
+- (CGSize)sizeForPage {
+    CGRect rect = CGRectInset(self.view.bounds, 10.0f, 10.0f);
+    return rect.size;
 }
 ```
 
