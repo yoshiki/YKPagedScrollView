@@ -31,6 +31,7 @@ typedef enum {
 
 @optional
 - (NSInteger)numberOfPagesForLazyLoading;
+- (CGSize)sizeForPage;
 
 @end
 

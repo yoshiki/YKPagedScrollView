@@ -9,6 +9,7 @@
 #import "ViewController.h"
 
 #define kYKPagedScrollViewDemoNumberOfPages 4
+#define kYKPagedScrollViewDemoPageInsets 30.0f
 
 @interface ViewController ()
 
@@ -36,8 +37,7 @@
     _scrollView.dataSource = self;
     _scrollView.clipsToBounds = NO;
     _scrollView.pagingEnabled = YES;
-    //_scrollView.pagingEnabled = NO;
-    //_scrollView.direction = YKPagedScrollViewDirectionVertical;
+//    _scrollView.direction = YKPagedScrollViewDirectionVertical;
     _scrollView.infinite = YES;
     [self.view addSubview:_scrollView];
     [_scrollView reloadData];
@@ -66,8 +66,17 @@
     return kYKPagedScrollViewDemoNumberOfPages;
 }
 
+// Should set numberOfPagesForLazyLoading larger than '2'
+// if scrollview bounds is smaller than frame.
 - (NSInteger)numberOfPagesForLazyLoading {
     return 2;
+}
+
+- (CGSize)sizeForPage {
+    CGRect rect = CGRectInset(self.view.bounds,
+                              kYKPagedScrollViewDemoPageInsets,
+                              kYKPagedScrollViewDemoPageInsets);
+    return rect.size;
 }
 
 - (UIView *)pagedScrollView:(YKPagedScrollView *)pagedScrollView viewForPageAtIndex:(NSInteger)index {

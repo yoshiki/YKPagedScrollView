@@ -38,6 +38,15 @@
     return self;
 }
 
+- (void)setDataSource:(id<YKPagedScrollViewDataSource>)dataSource {
+    _dataSource = dataSource;
+    // Set bounds
+    self.bounds = (CGRect){
+        .origin = CGPointZero,
+        .size = [self sizeForPage],
+    };
+}
+
 - (void)layoutSubviews {
     [super layoutSubviews];
     
@@ -96,8 +105,8 @@
 
 - (int)originalStartIndex {
     int startIndex = ((_direction == YKPagedScrollViewDirectionHorizontal)
-                      ? (int)(self.contentOffset.x / CGRectGetWidth(self.bounds))
-                      : (int)(self.contentOffset.y / CGRectGetHeight(self.bounds)));
+                      ? (int)(self.contentOffset.x / [self sizeForPage].width)
+                      : (int)(self.contentOffset.y / [self sizeForPage].height));
     return startIndex;
 }
 
@@ -153,12 +162,23 @@
             : index % _numberOfPage);
 }
 
+- (CGSize)sizeForPage {
+    if ([self.dataSource respondsToSelector:@selector(sizeForPage)]) {
+        return [self.dataSource sizeForPage];
+    } else {
+        return self.bounds.size;
+    }
+}
+
 - (CGRect)rectForPageAtIndex:(NSInteger)index {
     return (CGRect){
         .origin = ((_direction == YKPagedScrollViewDirectionHorizontal)
-                   ? (CGPoint){ CGRectGetWidth(self.bounds) * index, 0.0f }
-                   : (CGPoint){ 0.0f, CGRectGetHeight(self.bounds) * index }),
-        .size = self.bounds.size
+                   ? (CGPoint){
+                       [self sizeForPage].width * index + (CGRectGetWidth(self.bounds) - [self sizeForPage].width)/2,
+                       (CGRectGetHeight(self.bounds) - [self sizeForPage].height)/2
+                   }
+                   : (CGPoint){ 0.0f, [self sizeForPage].height * index }),
+        .size = [self sizeForPage],
     };
 }
 
@@ -176,34 +196,34 @@
 - (void)relocateContentOffset {
     if (_direction == YKPagedScrollViewDirectionHorizontal) {
         CGFloat offsetX = self.contentOffset.x;
-        CGFloat maxX = CGRectGetWidth(self.bounds) * _numberOfPage * (kYKPagedScrollViewAdvancedLengthFactor - 1);
-        CGFloat minX = CGRectGetWidth(self.bounds) * _numberOfPage;
+        CGFloat maxX = [self sizeForPage].width * _numberOfPage * (kYKPagedScrollViewAdvancedLengthFactor - 1);
+        CGFloat minX = [self sizeForPage].width * _numberOfPage;
         
         if (offsetX >= maxX) {
             self.contentOffset = (CGPoint){
-                CGRectGetWidth(self.bounds) * _numberOfPage * ((int)kYKPagedScrollViewAdvancedLengthFactor/2) + abs(offsetX - maxX),
+                [self sizeForPage].width * _numberOfPage * ((int)kYKPagedScrollViewAdvancedLengthFactor/2) + abs(offsetX - maxX),
                 0.0f
             };
         } else if (offsetX <= minX) {
             self.contentOffset = (CGPoint){
-                CGRectGetWidth(self.bounds) * _numberOfPage * ((int)kYKPagedScrollViewAdvancedLengthFactor/2) + abs(offsetX - minX),
+                [self sizeForPage].width * _numberOfPage * ((int)kYKPagedScrollViewAdvancedLengthFactor/2) + abs(offsetX - minX),
                 0.0f
             };
         }
     } else {
         CGFloat offsetY = self.contentOffset.y;
-        CGFloat maxY = CGRectGetHeight(self.bounds) * _numberOfPage * (kYKPagedScrollViewAdvancedLengthFactor - 1);
-        CGFloat minY = CGRectGetHeight(self.bounds) * _numberOfPage;
+        CGFloat maxY = [self sizeForPage].height * _numberOfPage * (kYKPagedScrollViewAdvancedLengthFactor - 1);
+        CGFloat minY = [self sizeForPage].height * _numberOfPage;
         
         if (offsetY >= maxY) {
             self.contentOffset = (CGPoint){
                 0.0f,
-                CGRectGetHeight(self.bounds) * _numberOfPage * ((int)kYKPagedScrollViewAdvancedLengthFactor/2) + abs(offsetY - maxY)
+                [self sizeForPage].height * _numberOfPage * ((int)kYKPagedScrollViewAdvancedLengthFactor/2) + abs(offsetY - maxY)
             };
         } else if (offsetY <= minY) {
             self.contentOffset = (CGPoint){
                 0.0f,
-                CGRectGetHeight(self.bounds) * _numberOfPage * ((int)kYKPagedScrollViewAdvancedLengthFactor/2) + abs(offsetY - minY)
+                [self sizeForPage].height * _numberOfPage * ((int)kYKPagedScrollViewAdvancedLengthFactor/2) + abs(offsetY - minY)
             };
         }
     }
@@ -223,25 +243,25 @@
     if (_infinite) {
         if (_direction == YKPagedScrollViewDirectionHorizontal) {
             return (CGSize){
-                CGRectGetWidth(self.bounds) * _numberOfPage * kYKPagedScrollViewAdvancedLengthFactor,
-                CGRectGetHeight(self.bounds)
+                [self sizeForPage].width * _numberOfPage * kYKPagedScrollViewAdvancedLengthFactor,
+                [self sizeForPage].height,
             };
         } else {
             return (CGSize){
-                CGRectGetWidth(self.bounds),
-                CGRectGetHeight(self.bounds) * _numberOfPage * kYKPagedScrollViewAdvancedLengthFactor,
+                [self sizeForPage].width,
+                [self sizeForPage].height * _numberOfPage * kYKPagedScrollViewAdvancedLengthFactor,
             };
         }
     } else {
         if (_direction == YKPagedScrollViewDirectionHorizontal) {
             return (CGSize){
-                CGRectGetWidth(self.bounds) * _numberOfPage,
-                CGRectGetHeight(self.bounds)
+                [self sizeForPage].width * _numberOfPage,
+                [self sizeForPage].height,
             };
         } else {
             return (CGSize){
-                CGRectGetWidth(self.bounds),
-                CGRectGetHeight(self.bounds) * _numberOfPage
+                [self sizeForPage].width,
+                [self sizeForPage].height * _numberOfPage,
             };
         }
     }
@@ -251,13 +271,13 @@
     if (_infinite) {
         if (_direction == YKPagedScrollViewDirectionHorizontal) {
             return (CGPoint){
-                CGRectGetWidth(self.bounds) * _numberOfPage * ((int)kYKPagedScrollViewAdvancedLengthFactor/2),
+                [self sizeForPage].width * _numberOfPage * ((int)kYKPagedScrollViewAdvancedLengthFactor/2),
                 0.0f
             };
         } else {
             return (CGPoint){
                 0.0f,
-                CGRectGetHeight(self.bounds) * _numberOfPage * ((int)kYKPagedScrollViewAdvancedLengthFactor/2),
+                [self sizeForPage].height * _numberOfPage * ((int)kYKPagedScrollViewAdvancedLengthFactor/2),
             };
         }
     } else {
