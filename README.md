@@ -52,10 +52,9 @@ Usage
     return page;
 }
 
-// Set size of a page that is smaller than a view frame
-- (CGSize)sizeForPage {
-    CGRect rect = CGRectInset(self.view.bounds, 10.0f, 10.0f);
-    return rect.size;
+// Set rect of a page that is smaller than a view frame
+- (CGRect)rectForPage {
+    return CGRectInset(self.view.bounds, 10.0f, 10.0f);
 }
 ```
 
