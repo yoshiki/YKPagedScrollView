@@ -41,10 +41,7 @@
 - (void)setDataSource:(id<YKPagedScrollViewDataSource>)dataSource {
     _dataSource = dataSource;
     // Set bounds
-    self.bounds = (CGRect){
-        .origin = CGPointMake(0.0f, 0.0f),
-        .size = [self sizeForPage],
-    };
+    _scrollView.frame = [self rectForPage];
 }
 
 - (void)layoutSubviews {
@@ -62,7 +59,7 @@
         UIView *page = [self pageAtIndex:index];
         page.tag = index;
         page.frame = [self rectForPageAtIndex:index];
-        [self addSubview:page];
+        [_scrollView addSubview:page];
         [visiblePages addObject:page];
     }
     
@@ -83,10 +80,14 @@
 #pragma mark - Private methods
 
 - (void)_initialize {
-    [super setDelegate:self];
-    self.showsHorizontalScrollIndicator = NO;
-    self.showsVerticalScrollIndicator = NO;
-    self.pagingEnabled = YES;
+    _scrollView = [[UIScrollView alloc] initWithFrame:CGRectZero];
+    _scrollView.delegate = self;
+    _scrollView.showsHorizontalScrollIndicator = NO;
+    _scrollView.showsVerticalScrollIndicator = NO;
+    _scrollView.pagingEnabled = YES;
+    _scrollView.clipsToBounds = NO;
+    [self addSubview:_scrollView];
+    
     _reusablePages = [NSMutableSet set];
     _visiblePages = [NSMutableSet set];
     _direction = YKPagedScrollViewDirectionHorizontal; // default
@@ -105,8 +106,8 @@
 
 - (int)originalStartIndex {
     int startIndex = ((_direction == YKPagedScrollViewDirectionHorizontal)
-                      ? (int)(self.contentOffset.x / [self sizeForPage].width)
-                      : (int)(self.contentOffset.y / [self sizeForPage].height));
+                      ? (int)(_scrollView.contentOffset.x / [self rectForPage].size.width)
+                      : (int)(_scrollView.contentOffset.y / [self rectForPage].size.height));
     return startIndex;
 }
 
@@ -162,11 +163,11 @@
             : index % _numberOfPage);
 }
 
-- (CGSize)sizeForPage {
-    if ([self.dataSource respondsToSelector:@selector(sizeForPage)]) {
-        return [self.dataSource sizeForPage];
+- (CGRect)rectForPage {
+    if ([self.dataSource respondsToSelector:@selector(rectForPage)]) {
+        return [self.dataSource rectForPage];
     } else {
-        return self.bounds.size;
+        return self.bounds;
     }
 }
 
@@ -174,11 +175,11 @@
     return (CGRect){
         .origin = ((_direction == YKPagedScrollViewDirectionHorizontal)
                    ? (CGPoint){
-                       [self sizeForPage].width * index + (CGRectGetWidth(self.bounds) - [self sizeForPage].width)/2,
-                       (CGRectGetHeight(self.bounds) - [self sizeForPage].height)/2
+                       [self rectForPage].size.width * index,
+                       0.0f,
                    }
-                   : (CGPoint){ 0.0f, [self sizeForPage].height * index }),
-        .size = [self sizeForPage],
+                   : (CGPoint){ 0.0f, [self rectForPage].size.height * index }),
+        .size = [self rectForPage].size,
     };
 }
 
@@ -195,35 +196,35 @@
 
 - (void)relocateContentOffset {
     if (_direction == YKPagedScrollViewDirectionHorizontal) {
-        CGFloat offsetX = self.contentOffset.x;
-        CGFloat maxX = [self sizeForPage].width * _numberOfPage * (kYKPagedScrollViewAdvancedLengthFactor - 1);
-        CGFloat minX = [self sizeForPage].width * _numberOfPage;
+        CGFloat offsetX = _scrollView.contentOffset.x;
+        CGFloat maxX = [self rectForPage].size.width * _numberOfPage * (kYKPagedScrollViewAdvancedLengthFactor - 1);
+        CGFloat minX = [self rectForPage].size.width * _numberOfPage;
         
         if (offsetX >= maxX) {
-            self.contentOffset = (CGPoint){
-                [self sizeForPage].width * _numberOfPage * ((int)kYKPagedScrollViewAdvancedLengthFactor/2) + abs(offsetX - maxX),
+            _scrollView.contentOffset = (CGPoint){
+                [self rectForPage].size.width * _numberOfPage * ((int)kYKPagedScrollViewAdvancedLengthFactor/2) + abs(offsetX - maxX),
                 0.0f
             };
         } else if (offsetX <= minX) {
-            self.contentOffset = (CGPoint){
-                [self sizeForPage].width * _numberOfPage * ((int)kYKPagedScrollViewAdvancedLengthFactor/2) + abs(offsetX - minX),
+            _scrollView.contentOffset = (CGPoint){
+                [self rectForPage].size.width * _numberOfPage * ((int)kYKPagedScrollViewAdvancedLengthFactor/2) + abs(offsetX - minX),
                 0.0f
             };
         }
     } else {
-        CGFloat offsetY = self.contentOffset.y;
-        CGFloat maxY = [self sizeForPage].height * _numberOfPage * (kYKPagedScrollViewAdvancedLengthFactor - 1);
-        CGFloat minY = [self sizeForPage].height * _numberOfPage;
+        CGFloat offsetY = _scrollView.contentOffset.y;
+        CGFloat maxY = [self rectForPage].size.height * _numberOfPage * (kYKPagedScrollViewAdvancedLengthFactor - 1);
+        CGFloat minY = [self rectForPage].size.height * _numberOfPage;
         
         if (offsetY >= maxY) {
-            self.contentOffset = (CGPoint){
+            _scrollView.contentOffset = (CGPoint){
                 0.0f,
-                [self sizeForPage].height * _numberOfPage * ((int)kYKPagedScrollViewAdvancedLengthFactor/2) + abs(offsetY - maxY)
+                [self rectForPage].size.height * _numberOfPage * ((int)kYKPagedScrollViewAdvancedLengthFactor/2) + abs(offsetY - maxY)
             };
         } else if (offsetY <= minY) {
-            self.contentOffset = (CGPoint){
+            _scrollView.contentOffset = (CGPoint){
                 0.0f,
-                [self sizeForPage].height * _numberOfPage * ((int)kYKPagedScrollViewAdvancedLengthFactor/2) + abs(offsetY - minY)
+                [self rectForPage].size.height * _numberOfPage * ((int)kYKPagedScrollViewAdvancedLengthFactor/2) + abs(offsetY - minY)
             };
         }
     }
@@ -243,25 +244,25 @@
     if (_infinite) {
         if (_direction == YKPagedScrollViewDirectionHorizontal) {
             return (CGSize){
-                [self sizeForPage].width * _numberOfPage * kYKPagedScrollViewAdvancedLengthFactor,
-                [self sizeForPage].height,
+                [self rectForPage].size.width * _numberOfPage * kYKPagedScrollViewAdvancedLengthFactor,
+                [self rectForPage].size.height,
             };
         } else {
             return (CGSize){
-                [self sizeForPage].width,
-                [self sizeForPage].height * _numberOfPage * kYKPagedScrollViewAdvancedLengthFactor,
+                [self rectForPage].size.width,
+                [self rectForPage].size.height * _numberOfPage * kYKPagedScrollViewAdvancedLengthFactor,
             };
         }
     } else {
         if (_direction == YKPagedScrollViewDirectionHorizontal) {
             return (CGSize){
-                [self sizeForPage].width * _numberOfPage,
-                [self sizeForPage].height,
+                [self rectForPage].size.width * _numberOfPage,
+                [self rectForPage].size.height,
             };
         } else {
             return (CGSize){
-                [self sizeForPage].width,
-                [self sizeForPage].height * _numberOfPage,
+                [self rectForPage].size.width,
+                [self rectForPage].size.height * _numberOfPage,
             };
         }
     }
@@ -271,13 +272,13 @@
     if (_infinite) {
         if (_direction == YKPagedScrollViewDirectionHorizontal) {
             return (CGPoint){
-                [self sizeForPage].width * _numberOfPage * ((int)kYKPagedScrollViewAdvancedLengthFactor/2),
+                [self rectForPage].size.width * _numberOfPage * ((int)kYKPagedScrollViewAdvancedLengthFactor/2),
                 0.0f
             };
         } else {
             return (CGPoint){
                 0.0f,
-                [self sizeForPage].height * _numberOfPage * ((int)kYKPagedScrollViewAdvancedLengthFactor/2),
+                [self rectForPage].size.height * _numberOfPage * ((int)kYKPagedScrollViewAdvancedLengthFactor/2),
             };
         }
     } else {
@@ -303,7 +304,7 @@
 #pragma mark - Public methods
 
 - (void)setDelegate:(id<YKPagedScrollViewDelegate>)delegate {
-    [super setDelegate:self];
+    [_scrollView setDelegate:self];
     if (delegate_ != delegate) {
         delegate_ = delegate;
     }
@@ -318,8 +319,8 @@
     [_visiblePages removeAllObjects];
     
     _numberOfPage = [self.dataSource numberOfPagesInPagedScrollView];
-    self.contentSize = [self _contentSize];
-    self.contentOffset = [self _contentOffset];
+    _scrollView.contentSize = [self _contentSize];
+    _scrollView.contentOffset = [self _contentOffset];
 }
 
 - (UIView *)dequeueReusablePage {
@@ -350,7 +351,7 @@
 
 - (void)scrollToIndex:(NSInteger)index animated:(BOOL)animated {
     [self performSelector:@selector(pageWillChange) withObject:nil afterDelay:0.0f];
-    [self scrollRectToVisible:[self rectForPageAtIndex:index] animated:animated];
+    [_scrollView scrollRectToVisible:[self rectForPageAtIndex:index] animated:animated];
     [self performSelector:@selector(pageDidChange) withObject:nil afterDelay:0.1f];
 }
 
@@ -358,7 +359,7 @@
     if (!_infinite && [self currentIndex] == _numberOfPage - 1) return;
     NSInteger nextPageIndex = [self startIndex] + 1;
     [self performSelector:@selector(pageWillChange) withObject:nil afterDelay:0.0f];
-    [self scrollRectToVisible:[self rectForPageAtIndex:nextPageIndex] animated:animated];
+    [_scrollView scrollRectToVisible:[self rectForPageAtIndex:nextPageIndex] animated:animated];
     [self performSelector:@selector(pageDidChange) withObject:nil afterDelay:0.1f];
 }
 
@@ -366,7 +367,7 @@
     if (!_infinite && [self currentIndex] == 0) return;
     NSInteger previousPageIndex = [self startIndex] - 1;
     [self performSelector:@selector(pageWillChange) withObject:nil afterDelay:0.0f];
-    [self scrollRectToVisible:[self rectForPageAtIndex:previousPageIndex] animated:animated];
+    [_scrollView scrollRectToVisible:[self rectForPageAtIndex:previousPageIndex] animated:animated];
     [self performSelector:@selector(pageDidChange) withObject:nil afterDelay:0.1f];
 }
 
@@ -380,13 +381,23 @@
     [self pageWillChange];
 }
 
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    [self setNeedsLayout];
+}
+
 #pragma mark - UIView hit test
 
 - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event {
-	if (!CGRectContainsPoint(self.frame, point)) {
-		return self;
-	}
-	return [super hitTest:point	withEvent:event];
+    if ([self pointInside:point withEvent:event]) {
+        CGPoint newPoint = CGPointZero;
+        newPoint.x = point.x - _scrollView.frame.origin.x + _scrollView.contentOffset.x;
+        newPoint.y = point.y - _scrollView.frame.origin.y + _scrollView.contentOffset.y;
+        if ([_scrollView pointInside:newPoint withEvent:event]) {
+            return [_scrollView hitTest:newPoint withEvent:event];
+        }
+        return _scrollView;
+    }
+    return nil;
 }
 
 @end

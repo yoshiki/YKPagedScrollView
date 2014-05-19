@@ -35,10 +35,9 @@
     _scrollView = [[YKPagedScrollView alloc] initWithFrame:self.view.bounds];
     _scrollView.delegate = self;
     _scrollView.dataSource = self;
-    _scrollView.clipsToBounds = NO;
-    _scrollView.pagingEnabled = YES;
 //    _scrollView.direction = YKPagedScrollViewDirectionVertical;
     _scrollView.infinite = YES;
+    _scrollView.scrollView.pagingEnabled = YES;
     [self.view addSubview:_scrollView];
     [_scrollView reloadData];
 }
@@ -48,6 +47,11 @@
     CGFloat saturation = ( arc4random() % 128 / 256.0 ) + 0.5;
     CGFloat brightness = ( arc4random() % 128 / 256.0 ) + 0.5;
     return [UIColor colorWithHue:hue saturation:saturation brightness:brightness alpha:1];
+}
+
+- (void)buttonDidTap:(id)sender
+{
+    NSLog(@"Tapped");
 }
 
 #pragma mark - YKPagedScrollViewDelegate
@@ -72,11 +76,11 @@
     return 2;
 }
 
-- (CGSize)sizeForPage {
+- (CGRect)rectForPage {
     CGRect rect = CGRectInset(self.view.bounds,
                               kYKPagedScrollViewDemoPageInsets,
                               kYKPagedScrollViewDemoPageInsets);
-    return rect.size;
+    return rect;
 }
 
 - (UIView *)pagedScrollView:(YKPagedScrollView *)pagedScrollView viewForPageAtIndex:(NSInteger)index {
@@ -84,12 +88,22 @@
     
     if (page == nil) {
         page = [[UIView alloc] initWithFrame:self.view.bounds];
+
         UILabel *label = [[UILabel alloc] init];
         label.backgroundColor = [UIColor clearColor];
         label.textColor = [UIColor whiteColor];
         label.font = [UIFont boldSystemFontOfSize:48.0f];
         label.tag = 999;
         [page addSubview:label];
+
+        UIButton *button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+        [button setTitle:@"Button" forState:UIControlStateNormal];
+        [button addTarget:self
+                   action:@selector(buttonDidTap:)
+         forControlEvents:UIControlEventTouchUpInside];
+        [button sizeToFit];
+        button.center = page.center;
+        [page addSubview:button];
     }
     
     UIColor *backgroundColor = [_colorCache objectForKey:@(index)];

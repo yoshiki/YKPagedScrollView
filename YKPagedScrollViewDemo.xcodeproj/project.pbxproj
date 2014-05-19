@@ -145,6 +145,11 @@
 			attributes = {
 				LastUpgradeCheck = 0460;
 				ORGANIZATIONNAME = "Yoshiki Kurihara";
+				TargetAttributes = {
+					D65F898617FE768300C15D35 = {
+						DevelopmentTeam = 4MN522WN87;
+					};
+				};
 			};
 			buildConfigurationList = D65F898217FE768300C15D35 /* Build configuration list for PBXProject "YKPagedScrollViewDemo" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -262,13 +267,14 @@
 		D65F89A517FE768300C15D35 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer: Yoshiki Kurihara (GQP7W88TZ9)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "YKPagedScrollViewDemo/YKPagedScrollViewDemo-Prefix.pch";
 				INFOPLIST_FILE = "YKPagedScrollViewDemo/YKPagedScrollViewDemo-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "40B58308-B10B-4D41-8C47-27EAF64FF926";
+				PROVISIONING_PROFILE = "4ED2239F-8A58-46B1-A210-1F20D3A25405";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -276,13 +282,14 @@
 		D65F89A617FE768300C15D35 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer: Yoshiki Kurihara (GQP7W88TZ9)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "YKPagedScrollViewDemo/YKPagedScrollViewDemo-Prefix.pch";
 				INFOPLIST_FILE = "YKPagedScrollViewDemo/YKPagedScrollViewDemo-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "40B58308-B10B-4D41-8C47-27EAF64FF926";
+				PROVISIONING_PROFILE = "4ED2239F-8A58-46B1-A210-1F20D3A25405";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

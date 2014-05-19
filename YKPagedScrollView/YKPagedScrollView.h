@@ -31,13 +31,14 @@ typedef enum {
 
 @optional
 - (NSInteger)numberOfPagesForLazyLoading;
-- (CGSize)sizeForPage;
+- (CGRect)rectForPage;
 
 @end
 
-@interface YKPagedScrollView : UIScrollView <UIScrollViewDelegate>
+@interface YKPagedScrollView : UIView <UIScrollViewDelegate>
 
-@property (nonatomic, strong) NSMutableSet *visiblePages;
+@property (nonatomic, readonly) UIScrollView *scrollView;
+@property (nonatomic, readonly) NSMutableSet *visiblePages;
 @property (nonatomic, unsafe_unretained) id<YKPagedScrollViewDelegate> delegate;
 @property (nonatomic, unsafe_unretained) id<YKPagedScrollViewDataSource> dataSource;
 @property (nonatomic, assign) YKPagedScrollViewDirection direction;
