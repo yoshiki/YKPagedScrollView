@@ -44,6 +44,12 @@
     _scrollView.frame = [self rectForPage];
 }
 
+- (void)setFrame:(CGRect)frame {
+    [super setFrame:frame];
+    _scrollView.frame = [self rectForPage];
+    [self reloadData];
+}
+
 - (void)layoutSubviews {
     [super layoutSubviews];
     
@@ -80,7 +86,7 @@
 #pragma mark - Private methods
 
 - (void)_initialize {
-    _scrollView = [[UIScrollView alloc] initWithFrame:CGRectZero];
+    _scrollView = [[UIScrollView alloc] initWithFrame:self.bounds];
     _scrollView.delegate = self;
     _scrollView.showsHorizontalScrollIndicator = NO;
     _scrollView.showsVerticalScrollIndicator = NO;
@@ -174,10 +180,7 @@
 - (CGRect)rectForPageAtIndex:(NSInteger)index {
     return (CGRect){
         .origin = ((_direction == YKPagedScrollViewDirectionHorizontal)
-                   ? (CGPoint){
-                       [self rectForPage].size.width * index,
-                       0.0f,
-                   }
+                   ? (CGPoint){ [self rectForPage].size.width * index, 0.0f }
                    : (CGPoint){ 0.0f, [self rectForPage].size.height * index }),
         .size = [self rectForPage].size,
     };
@@ -341,7 +344,7 @@
 }
 
 - (NSInteger)currentIndex {
-    int index = [self startIndex];
+    int index = [self originalStartIndex];
     return [self convertIndexFromInternalIndex:index];
 }
 
