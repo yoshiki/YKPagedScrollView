@@ -42,7 +42,7 @@
     _dataSource = dataSource;
     // Set bounds
     self.bounds = (CGRect){
-        .origin = CGPointZero,
+        .origin = CGPointMake(0.0f, 0.0f),
         .size = [self sizeForPage],
     };
 }
@@ -378,6 +378,15 @@
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
     [self pageWillChange];
+}
+
+#pragma mark - UIView hit test
+
+- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event {
+	if (!CGRectContainsPoint(self.frame, point)) {
+		return self;
+	}
+	return [super hitTest:point	withEvent:event];
 }
 
 @end
