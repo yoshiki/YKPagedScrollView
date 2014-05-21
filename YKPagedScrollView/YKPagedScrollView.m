@@ -86,18 +86,22 @@
 #pragma mark - Private methods
 
 - (void)_initialize {
-    _scrollView = [[UIScrollView alloc] initWithFrame:self.bounds];
-    _scrollView.delegate = self;
-    _scrollView.showsHorizontalScrollIndicator = NO;
-    _scrollView.showsVerticalScrollIndicator = NO;
-    _scrollView.pagingEnabled = YES;
-    _scrollView.clipsToBounds = NO;
-    [self addSubview:_scrollView];
-    
+    _numberOfPage = 0;
     _reusablePages = [NSMutableSet set];
     _visiblePages = [NSMutableSet set];
     _direction = YKPagedScrollViewDirectionHorizontal; // default
     _infinite = NO; // default
+    _pagingEnabled = YES; // default
+
+    _scrollView = [[UIScrollView alloc] initWithFrame:self.bounds];
+    _scrollView.delegate = self;
+    _scrollView.showsHorizontalScrollIndicator = NO;
+    _scrollView.showsVerticalScrollIndicator = NO;
+    _scrollView.pagingEnabled = _pagingEnabled;
+    _scrollView.clipsToBounds = NO;
+    [self addSubview:_scrollView];
+
+    [self reloadData];
 }
 
 - (NSArray *)indexesForPage {
@@ -178,12 +182,17 @@
 }
 
 - (CGRect)rectForPageAtIndex:(NSInteger)index {
-    return (CGRect){
-        .origin = ((_direction == YKPagedScrollViewDirectionHorizontal)
-                   ? (CGPoint){ [self rectForPage].size.width * index, 0.0f }
-                   : (CGPoint){ 0.0f, [self rectForPage].size.height * index }),
-        .size = [self rectForPage].size,
-    };
+    if (_direction == YKPagedScrollViewDirectionHorizontal) {
+        return (CGRect){
+            .origin = (CGPoint){ [self rectForPage].size.width * index, 0.0f },
+            .size = [self rectForPage].size,
+        };
+    } else {
+        return (CGRect){
+            .origin = (CGPoint){ 0.0f, [self rectForPage].size.height * index },
+            .size = [self rectForPage].size,
+        };
+    }
 }
 
 - (UIView *)visiblePageAtIndex:(NSInteger)index {
@@ -209,6 +218,7 @@
                 0.0f
             };
         } else if (offsetX <= minX) {
+            offsetX += [self _contentOffset].x;
             _scrollView.contentOffset = (CGPoint){
                 [self rectForPage].size.width * _numberOfPage * ((int)kYKPagedScrollViewAdvancedLengthFactor/2) + abs(offsetX - minX),
                 0.0f
@@ -225,6 +235,7 @@
                 [self rectForPage].size.height * _numberOfPage * ((int)kYKPagedScrollViewAdvancedLengthFactor/2) + abs(offsetY - maxY)
             };
         } else if (offsetY <= minY) {
+            offsetY += [self _contentOffset].y;
             _scrollView.contentOffset = (CGPoint){
                 0.0f,
                 [self rectForPage].size.height * _numberOfPage * ((int)kYKPagedScrollViewAdvancedLengthFactor/2) + abs(offsetY - minY)
@@ -311,6 +322,11 @@
     if (delegate_ != delegate) {
         delegate_ = delegate;
     }
+}
+
+- (void)setPagingEnabled:(BOOL)pagingEnabled {
+    _pagingEnabled = pagingEnabled;
+    _scrollView.pagingEnabled = _pagingEnabled;
 }
 
 - (void)reloadData {

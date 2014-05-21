@@ -43,6 +43,7 @@ typedef enum {
 @property (nonatomic, unsafe_unretained) id<YKPagedScrollViewDataSource> dataSource;
 @property (nonatomic, assign) YKPagedScrollViewDirection direction;
 @property (nonatomic, assign) BOOL infinite;
+@property (nonatomic, assign) BOOL pagingEnabled;
 
 - (void)reloadData;
 - (UIView *)dequeueReusablePage;

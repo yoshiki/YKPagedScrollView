@@ -37,7 +37,7 @@
     _scrollView.dataSource = self;
 //    _scrollView.direction = YKPagedScrollViewDirectionVertical;
     _scrollView.infinite = YES;
-    _scrollView.scrollView.pagingEnabled = YES;
+    _scrollView.pagingEnabled = YES;
     [self.view addSubview:_scrollView];
     [_scrollView reloadData];
 }
