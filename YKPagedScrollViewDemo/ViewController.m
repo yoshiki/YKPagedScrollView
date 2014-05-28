@@ -42,6 +42,25 @@
     [_scrollView reloadData];
 }
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+//    [self scrollToPreviousPage];
+//    [self scrollToNextPage];
+}
+
+- (void)scrollToNextPage
+{
+    [_scrollView scrollToNextPageAnimated:YES];
+    [self performSelector:@selector(scrollToNextPage) withObject:nil afterDelay:5.0f];
+}
+
+- (void)scrollToPreviousPage
+{
+    [_scrollView scrollToPreviousPageAnimated:YES];
+    [self performSelector:@selector(scrollToPreviousPage) withObject:nil afterDelay:5.0f];
+}
+
 - (UIColor *)randomizedColor {
     CGFloat hue = ( arc4random() % 256 / 256.0 );
     CGFloat saturation = ( arc4random() % 128 / 256.0 ) + 0.5;
@@ -52,6 +71,7 @@
 - (void)buttonDidTap:(id)sender
 {
     NSLog(@"Tapped");
+//    [_scrollView scrollToIndex:2 animated:YES];
 }
 
 #pragma mark - YKPagedScrollViewDelegate
