@@ -114,42 +114,31 @@
     return indexes;
 }
 
-- (int)originalStartIndex {
-    int startIndex = ((_direction == YKPagedScrollViewDirectionHorizontal)
-                      ? (int)(_scrollView.contentOffset.x / [self rectForPage].size.width)
-                      : (int)(_scrollView.contentOffset.y / [self rectForPage].size.height));
-    return startIndex;
+- (int)internalCurrentIndex {
+    return ((_direction == YKPagedScrollViewDirectionHorizontal)
+            ? (int)(_scrollView.contentOffset.x / [self rectForPage].size.width)
+            : (int)(_scrollView.contentOffset.y / [self rectForPage].size.height));
 }
 
 - (int)startIndex {
-    int originalStartIndex = [self originalStartIndex];
-    int startIndex = 0;
-    if (_infinite) {
-        startIndex = MAX(originalStartIndex - [self numberOfLazyLoading], 0);
-    } else {
-        if (originalStartIndex == 0) {
-            startIndex = originalStartIndex;
-        } else {
-            startIndex = MAX(originalStartIndex - [self numberOfLazyLoading], 0);
-        }
-    }
-    return startIndex;
+    int internalCurrentIndex = [self internalCurrentIndex];
+    return MAX(internalCurrentIndex - [self numberOfLazyLoading], 0);
 }
 
 - (int)endIndex {
-    int originalStartIndex = [self originalStartIndex];
+    int internalCurrentIndex = [self internalCurrentIndex];
     int endIndex;
     if (_infinite) {
-        endIndex = originalStartIndex + [self numberOfLazyLoading];
+        endIndex = internalCurrentIndex + [self numberOfLazyLoading];
     } else {
-        if (originalStartIndex == 0) {
-            endIndex = originalStartIndex + [self numberOfLazyLoading];
-        } else if (originalStartIndex == [self numberOfPage] - 2) {
-            endIndex = originalStartIndex + [self numberOfLazyLoading] - 1;
-        } else if (originalStartIndex == [self numberOfPage] - 1) {
-            endIndex = originalStartIndex;
+        if (internalCurrentIndex == 0) {
+            endIndex = internalCurrentIndex + [self numberOfLazyLoading];
+        } else if (internalCurrentIndex == [self numberOfPage] - 2) {
+            endIndex = internalCurrentIndex + [self numberOfLazyLoading] - 1;
+        } else if (internalCurrentIndex == [self numberOfPage] - 1) {
+            endIndex = internalCurrentIndex;
         } else {
-            endIndex = originalStartIndex + [self numberOfLazyLoading];
+            endIndex = internalCurrentIndex + [self numberOfLazyLoading];
         }
     }
     return endIndex;
@@ -168,9 +157,7 @@
 }
 
 - (NSInteger)convertIndexFromInternalIndex:(NSInteger)index {
-    return ((index < _numberOfPage)
-            ? index
-            : index % _numberOfPage);
+    return index % _numberOfPage;
 }
 
 - (CGRect)rectForPage {
@@ -251,7 +238,7 @@
     } else {
         num = kYKPagedScrollViewNumberOfLazyLoading;
     }
-    return (num > _numberOfPage) ? _numberOfPage : num;
+    return num;
 }
 
 - (CGSize)_contentSize {
@@ -372,7 +359,7 @@
 }
 
 - (NSInteger)currentIndex {
-    int index = [self originalStartIndex];
+    int index = [self internalCurrentIndex];
     return [self convertIndexFromInternalIndex:index];
 }
 
@@ -399,16 +386,16 @@
 }
 
 - (void)scrollToIndex:(NSInteger)index animated:(BOOL)animated {
-    if ([self currentIndex] == index) return;
+    if (index == [self currentIndex] || index > _numberOfPage - 1) return;
     [self performSelector:@selector(pageWillChange) withObject:nil afterDelay:0.0f];
-    NSInteger toIndex = [self originalStartIndex] + (index - [self currentIndex]);
+    NSInteger toIndex = [self internalCurrentIndex] + (index - [self currentIndex]);
     [_scrollView scrollRectToVisible:[self rectForPageAtIndex:toIndex] animated:animated];
     [self performSelector:@selector(pageDidChangeToIndex:) withObject:@(index) afterDelay:0.1f];
 }
 
 - (void)scrollToNextPageAnimated:(BOOL)animated {
     if (!_infinite && [self currentIndex] == _numberOfPage - 1) return;
-    NSInteger nextPageIndex = [self originalStartIndex] + 1;
+    NSInteger nextPageIndex = [self internalCurrentIndex] + 1;
     [self performSelector:@selector(pageWillChange) withObject:nil afterDelay:0.0f];
     [_scrollView scrollRectToVisible:[self rectForPageAtIndex:nextPageIndex] animated:animated];
     [self performSelector:@selector(pageDidChangeToNext) withObject:nil afterDelay:0.1f];
@@ -416,7 +403,7 @@
 
 - (void)scrollToPreviousPageAnimated:(BOOL)animated {
     if (!_infinite && [self currentIndex] == 0) return;
-    NSInteger previousPageIndex = [self originalStartIndex] - 1;
+    NSInteger previousPageIndex = [self internalCurrentIndex] - 1;
     [self performSelector:@selector(pageWillChange) withObject:nil afterDelay:0.0f];
     [_scrollView scrollRectToVisible:[self rectForPageAtIndex:previousPageIndex] animated:animated];
     [self performSelector:@selector(pageDidChangeToPrevious) withObject:nil afterDelay:0.1f];
@@ -440,13 +427,18 @@
 
 - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event {
     if ([self pointInside:point withEvent:event]) {
-        CGPoint newPoint = CGPointZero;
-        newPoint.x = point.x - _scrollView.frame.origin.x + _scrollView.contentOffset.x;
-        newPoint.y = point.y - _scrollView.frame.origin.y + _scrollView.contentOffset.y;
+        CGPoint newPoint = [self convertPoint:point toView:_scrollView];
         if ([_scrollView pointInside:newPoint withEvent:event]) {
             return [_scrollView hitTest:newPoint withEvent:event];
         }
-        return _scrollView;
+
+        CGFloat inset = (CGRectGetWidth(self.frame) - CGRectGetWidth(_scrollView.frame)) / 2;
+        CGRect expandScrollViewFrame = CGRectInset(_scrollView.frame, -inset, 0.0f);
+        if (CGRectContainsPoint(expandScrollViewFrame, point)) {
+            return _scrollView;
+        }
+        
+        return [super hitTest:point withEvent:event];
     }
     return nil;
 }

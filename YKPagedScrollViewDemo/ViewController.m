@@ -52,13 +52,13 @@
 - (void)scrollToNextPage
 {
     [_scrollView scrollToNextPageAnimated:YES];
-    [self performSelector:@selector(scrollToNextPage) withObject:nil afterDelay:5.0f];
+//    [self performSelector:@selector(scrollToNextPage) withObject:nil afterDelay:5.0f];
 }
 
 - (void)scrollToPreviousPage
 {
     [_scrollView scrollToPreviousPageAnimated:YES];
-    [self performSelector:@selector(scrollToPreviousPage) withObject:nil afterDelay:5.0f];
+//    [self performSelector:@selector(scrollToPreviousPage) withObject:nil afterDelay:5.0f];
 }
 
 - (UIColor *)randomizedColor {
@@ -122,8 +122,12 @@
                    action:@selector(buttonDidTap:)
          forControlEvents:UIControlEventTouchUpInside];
         [button sizeToFit];
-        button.center = page.center;
         [page addSubview:button];
+        
+        CGRect buttonFrame = button.frame;
+        buttonFrame.origin.x = (CGRectGetWidth([self rectForPage]) - CGRectGetWidth(buttonFrame)) / 2;
+        buttonFrame.origin.y = (CGRectGetHeight([self rectForPage]) - CGRectGetHeight(buttonFrame)) / 2;
+        button.frame = buttonFrame;
     }
     
     UIColor *backgroundColor = [_colorCache objectForKey:@(index)];

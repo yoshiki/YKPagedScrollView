@@ -8,6 +8,16 @@
 
 #import <UIKit/UIKit.h>
 
+#undef weak_delegate
+#undef __weak_delegate
+#if __has_feature(objc_arc) && __has_feature(objc_arc_weak) && \
+(!(defined __MAC_OS_X_VERSION_MIN_REQUIRED) || \
+__MAC_OS_X_VERSION_MIN_REQUIRED >= __MAC_10_8)
+#define weak_delegate weak
+#else
+#define weak_delegate unsafe_unretained
+#endif
+
 typedef enum {
     YKPagedScrollViewDirectionHorizontal = 0,
     YKPagedScrollViewDirectionVertical,
@@ -39,8 +49,8 @@ typedef enum {
 
 @property (nonatomic, readonly) UIScrollView *scrollView;
 @property (nonatomic, readonly) NSMutableSet *visiblePages;
-@property (nonatomic, unsafe_unretained) id<YKPagedScrollViewDelegate> delegate;
-@property (nonatomic, unsafe_unretained) id<YKPagedScrollViewDataSource> dataSource;
+@property (nonatomic, weak_delegate) id<YKPagedScrollViewDelegate> delegate;
+@property (nonatomic, weak_delegate) id<YKPagedScrollViewDataSource> dataSource;
 @property (nonatomic, assign) YKPagedScrollViewDirection direction;
 @property (nonatomic, assign) BOOL infinite;
 @property (nonatomic, assign) BOOL pagingEnabled;
