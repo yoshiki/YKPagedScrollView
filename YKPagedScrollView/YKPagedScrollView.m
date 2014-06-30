@@ -382,7 +382,7 @@
 }
 
 - (UIView *)currentPage {
-    return [self visiblePageAtIndex:[self startIndex]];
+    return [self visiblePageAtIndex:[self internalCurrentIndex]];
 }
 
 - (void)scrollToIndex:(NSInteger)index animated:(BOOL)animated {
