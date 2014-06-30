@@ -317,7 +317,6 @@
 #pragma mark - Public methods
 
 - (void)setDelegate:(id<YKPagedScrollViewDelegate>)delegate {
-    [_scrollView setDelegate:self];
     if (delegate_ != delegate) {
         delegate_ = delegate;
     }
@@ -411,16 +410,87 @@
 
 #pragma mark - UIScrollViewDelegate
 
-- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
-    [self pageDidChangeToIndex:@([self currentIndex])];
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    [self setNeedsLayout];
+    if (self.delegate != nil && [self.delegate respondsToSelector:@selector(scrollViewDidScroll:)]) {
+        [self.delegate scrollViewDidScroll:scrollView];
+    }
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
     [self pageWillChange];
+    if (self.delegate != nil && [self.delegate respondsToSelector:@selector(scrollViewWillBeginDragging:)]) {
+        [self.delegate scrollViewWillBeginDragging:scrollView];
+    }
 }
 
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-    [self setNeedsLayout];
+- (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset {
+    if (self.delegate != nil && [self.delegate respondsToSelector:@selector(scrollViewWillEndDragging:withVelocity:targetContentOffset:)]) {
+        [self.delegate scrollViewWillEndDragging:scrollView withVelocity:velocity targetContentOffset:targetContentOffset];
+    }
+}
+
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
+    if (self.delegate != nil && [self.delegate respondsToSelector:@selector(scrollViewDidEndDragging:willDecelerate:)]) {
+        [self.delegate scrollViewDidEndDragging:scrollView willDecelerate:decelerate];
+    }
+}
+
+- (BOOL)scrollViewShouldScrollToTop:(UIScrollView *)scrollView {
+    if (self.delegate != nil && [self.delegate respondsToSelector:@selector(scrollViewShouldScrollToTop:)]) {
+        return [self.delegate scrollViewShouldScrollToTop:scrollView];
+    }
+    return scrollView.scrollsToTop;
+}
+
+- (void)scrollViewDidScrollToTop:(UIScrollView *)scrollView {
+    if (self.delegate != nil && [self.delegate respondsToSelector:@selector(scrollViewDidScrollToTop:)]) {
+        [self.delegate scrollViewDidScrollToTop:scrollView];
+    }
+}
+
+- (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView {
+    if (self.delegate != nil && [self.delegate respondsToSelector:@selector(scrollViewWillBeginDecelerating:)]) {
+        [self.delegate scrollViewWillBeginDecelerating:scrollView];
+    }
+}
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+    [self pageDidChangeToIndex:@([self currentIndex])];
+    if (self.delegate != nil && [self.delegate respondsToSelector:@selector(scrollViewDidEndDecelerating:)]) {
+        [self.delegate scrollViewDidEndDecelerating:scrollView];
+    }
+}
+
+- (UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView {
+    if (self.delegate != nil && [self.delegate respondsToSelector:@selector(viewForZoomingInScrollView:)]) {
+        return [self.delegate viewForZoomingInScrollView:scrollView];
+    }
+    return nil;
+}
+
+- (void)scrollViewWillBeginZooming:(UIScrollView *)scrollView withView:(UIView *)view {
+    if (self.delegate != nil && [self.delegate respondsToSelector:@selector(scrollViewWillBeginZooming:withView:)]) {
+        [self.delegate scrollViewWillBeginZooming:scrollView withView:view];
+    }
+}
+
+- (void)scrollViewDidEndZooming:(UIScrollView *)scrollView withView:(UIView *)view atScale:(CGFloat)scale {
+    if (self.delegate != nil && [self.delegate respondsToSelector:@selector(scrollViewDidEndZooming:withView:atScale:)]) {
+        [self.delegate scrollViewDidEndZooming:scrollView withView:view atScale:scale];
+    }
+}
+
+- (void)scrollViewDidZoom:(UIScrollView *)scrollView {
+    if (self.delegate != nil && [self.delegate respondsToSelector:@selector(scrollViewDidZoom:)]) {
+        [self.delegate scrollViewDidZoom:scrollView];
+    }
+}
+
+- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {
+    if (self.delegate != nil && [self.delegate respondsToSelector:@selector(scrollViewDidEndScrollingAnimation:)]) {
+        [self.delegate scrollViewDidEndScrollingAnimation:scrollView];
+    }
 }
 
 #pragma mark - UIView hit test
