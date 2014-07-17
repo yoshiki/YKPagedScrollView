@@ -42,6 +42,14 @@
     _dataSource = dataSource;
     // Set bounds
     _scrollView.frame = [self rectForPage];
+    
+    if (CGRectGetWidth(self.bounds) > CGRectGetWidth(_scrollView.bounds)
+        || CGRectGetHeight(self.bounds) > CGRectGetHeight(_scrollView.bounds)) {
+        if ([self.dataSource respondsToSelector:@selector(numberOfPagesForLazyLoading)]
+            && [self.dataSource numberOfPagesForLazyLoading] < 2)  {
+            NSLog(@"Warning: 'numberOfPagesForLazyLoading' should return the number that is larger than 2 if the value return from 'rectForPage' is smaller than frame.");
+        }
+    }
 }
 
 - (void)setFrame:(CGRect)frame {
