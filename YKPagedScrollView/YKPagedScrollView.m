@@ -452,6 +452,9 @@
 }
 
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
+    if (!decelerate) {
+        [self pageDidChangeToIndex:@([self currentIndex])];
+    }
     if (self.delegate != nil && [self.delegate respondsToSelector:@selector(scrollViewDidEndDragging:willDecelerate:)]) {
         [self.delegate scrollViewDidEndDragging:scrollView willDecelerate:decelerate];
     }
