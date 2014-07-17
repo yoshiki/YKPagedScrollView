@@ -146,11 +146,7 @@
         if (_infinite) {
             endIndex = internalCurrentIndex + [self numberOfLazyLoading];
         } else {
-            if (internalCurrentIndex == 0) {
-                endIndex = internalCurrentIndex + [self numberOfLazyLoading];
-            } else if (internalCurrentIndex == [self numberOfPage] - 2) {
-                endIndex = internalCurrentIndex + [self numberOfLazyLoading] - 1;
-            } else if (internalCurrentIndex == [self numberOfPage] - 1) {
+            if (internalCurrentIndex == [self numberOfPage] - 1) {
                 endIndex = internalCurrentIndex;
             } else {
                 endIndex = internalCurrentIndex + [self numberOfLazyLoading];
