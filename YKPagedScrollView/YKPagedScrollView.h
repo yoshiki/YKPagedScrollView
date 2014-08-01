@@ -49,6 +49,7 @@ typedef enum {
 
 @property (nonatomic, readonly) UIScrollView *scrollView;
 @property (nonatomic, readonly) NSMutableSet *visiblePages;
+@property (nonatomic, readonly) NSMutableSet *reusablePages;
 @property (nonatomic, weak_delegate) id<YKPagedScrollViewDelegate> delegate;
 @property (nonatomic, weak_delegate) id<YKPagedScrollViewDataSource> dataSource;
 @property (nonatomic, assign) YKPagedScrollViewDirection direction;
