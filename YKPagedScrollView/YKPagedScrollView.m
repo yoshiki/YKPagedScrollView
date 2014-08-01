@@ -80,19 +80,8 @@
         [_scrollView addSubview:page];
         [visiblePages addObject:page];
     }
-    
-    // remove current visible pages temporary.
-    [_visiblePages minusSet:visiblePages];
-    
-    // now _visiblePages has only reusable pages.
-    NSSet *reusablePages = _visiblePages;
-    for (UIView *reusablePage in reusablePages) {
-        [reusablePage removeFromSuperview];
-    }
-    [_reusablePages unionSet:reusablePages];
-    
-    // set new visible pages.
-    _visiblePages = visiblePages;
+
+    [self combineReusablePagesWithVisiblePages:visiblePages];
 }
 
 #pragma mark - Private methods
@@ -332,6 +321,21 @@
     if ([self.delegate respondsToSelector:@selector(pagedScrollView:pageWillChangeFrom:)]) {
         [self.delegate pagedScrollView:self pageWillChangeFrom:[self currentIndex]];
     }
+}
+
+- (void)combineReusablePagesWithVisiblePages:(NSSet *)visiblePages {
+    // remove current visible pages temporary.
+    [_visiblePages minusSet:visiblePages];
+    
+    // now _visiblePages has only reusable pages.
+    NSSet *reusablePages = _visiblePages;
+    for (UIView *reusablePage in reusablePages) {
+        [reusablePage removeFromSuperview];
+    }
+    [_reusablePages unionSet:reusablePages];
+    
+    // set new visible pages.
+    _visiblePages = visiblePages.mutableCopy;
 }
 
 #pragma mark - Public methods
