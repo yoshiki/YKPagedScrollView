@@ -55,6 +55,7 @@
 - (void)setFrame:(CGRect)frame {
     [super setFrame:frame];
     _scrollView.frame = [self rectForPage];
+    _scrollView.contentSize = [self _contentSize];
 }
 
 - (void)layoutSubviews {
