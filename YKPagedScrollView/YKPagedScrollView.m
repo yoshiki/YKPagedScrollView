@@ -107,9 +107,9 @@
 
 - (NSArray *)indexesForPage {
     NSMutableArray *indexes = @[].mutableCopy;
-    int startIndex = [self startIndex];
-    int endIndex = [self endIndex];
-    for (int i = startIndex; i <= endIndex; i++) {
+    NSInteger startIndex = [self startIndex];
+    NSInteger endIndex = [self endIndex];
+    for (NSInteger i = startIndex; i <= endIndex; i++) {
         [indexes addObject:@(i)];
     }
     return indexes;
@@ -125,8 +125,8 @@
     }
 }
 
-- (int)startIndex {
-    int internalCurrentIndex = [self internalCurrentIndex];
+- (NSInteger)startIndex {
+    NSInteger internalCurrentIndex = [self internalCurrentIndex];
     if (internalCurrentIndex == NSNotFound) {
         return 0;
     } else {
@@ -134,12 +134,12 @@
     }
 }
 
-- (int)endIndex {
-    int internalCurrentIndex = [self internalCurrentIndex];
+- (NSInteger)endIndex {
+    NSInteger internalCurrentIndex = [self internalCurrentIndex];
     if (internalCurrentIndex == NSNotFound) {
         return 0;
     } else {
-        int endIndex;
+        NSInteger endIndex;
         if (_infinite) {
             endIndex = internalCurrentIndex + [self numberOfLazyLoading];
         } else {
