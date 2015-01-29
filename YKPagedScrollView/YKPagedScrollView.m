@@ -77,7 +77,9 @@
         UIView *page = [self pageAtIndex:index];
         page.tag = index;
         page.frame = [self rectForPageAtIndex:index];
-        [_scrollView addSubview:page];
+        if (![page isDescendantOfView:_scrollView]) {
+            [_scrollView addSubview:page];
+        }
         [visiblePages addObject:page];
     }
 
@@ -156,7 +158,6 @@
 - (UIView *)pageAtIndex:(NSInteger)index {
     UIView *page = [self visiblePageAtIndex:index];
     if (page != nil) {
-        [page removeFromSuperview];
         return page;
     } else {
         NSInteger externalIndex = [self convertIndexFromInternalIndex:index];
