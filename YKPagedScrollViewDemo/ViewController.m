@@ -77,11 +77,11 @@
 #pragma mark - YKPagedScrollViewDelegate
 
 - (void)pagedScrollView:(YKPagedScrollView *)pagedScrollView pageWillChangeFrom:(NSInteger)index {
-    NSLog(@"A page will change from %d", index);
+    NSLog(@"A page will change from %ld", index);
 }
 
 - (void)pagedScrollView:(YKPagedScrollView *)pagedScrollView pageDidChangeTo:(NSInteger)index {
-    NSLog(@"A page changed to %d", index);
+    NSLog(@"A page changed to %ld", index);
 }
 
 #pragma mark - YKPagedScrollViewDataSource
@@ -138,7 +138,7 @@
     page.backgroundColor = backgroundColor;
     
     UILabel *l = (UILabel *)[page viewWithTag:999];
-    l.text = [NSString stringWithFormat:@"%d", index];
+    l.text = [NSString stringWithFormat:@"%ld", index];
     [l sizeToFit];
 
     return page;
