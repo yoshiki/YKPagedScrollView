@@ -79,10 +79,18 @@
         page.frame = [self rectForPageAtIndex:index];
         if (![page isDescendantOfView:_scrollView]) {
             [_scrollView addSubview:page];
+            
+            if (self.dataSource
+                && [self.dataSource respondsToSelector:@selector(pagedScrollViewShouldUpdate)]
+                && [self.dataSource pagedScrollViewShouldUpdate]
+                && self.delegate
+                && [self.delegate respondsToSelector:@selector(pagedScrollView:updateView:atIndex:)]) {
+                [self.delegate pagedScrollView:_scrollView updateView:page atIndex:index];
+            }
         }
         [visiblePages addObject:page];
     }
-
+    
     [self combineReusablePagesWithVisiblePages:visiblePages];
 }
 

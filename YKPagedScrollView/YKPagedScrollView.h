@@ -30,6 +30,7 @@ typedef enum {
 @optional
 - (void)pagedScrollView:(YKPagedScrollView *)pagedScrollView pageWillChangeFrom:(NSInteger)index;
 - (void)pagedScrollView:(YKPagedScrollView *)pagedScrollView pageDidChangeTo:(NSInteger)index;
+- (void)pagedScrollView:(YKPagedScrollView *)pagedScrollView updateView:(UIView *)view atIndex:(NSInteger)index;
 
 @end
 
@@ -42,6 +43,7 @@ typedef enum {
 @optional
 - (NSInteger)numberOfPagesForLazyLoading;
 - (CGRect)rectForPage;
+- (BOOL)pagedScrollViewShouldUpdate;
 
 @end
 
